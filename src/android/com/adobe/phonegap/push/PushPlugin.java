@@ -200,7 +200,7 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             Log.v(LOG_TAG, "execute: senderID=" + senderID);
 
             try {
-              token = FirebaseMessaging.getInstance().token.await();
+              token = Tasks.await(FirebaseMessaging.getInstance().token);
             } catch (IllegalStateException e) {
               Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
             }
@@ -285,7 +285,7 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
               unsubscribeFromTopics(topics, registration_id);
             } else {
               try {
-                FirebaseMessaging.getInstance().deleteToken().await();
+                Tasks.await(FirebaseMessaging.getInstance().deleteToken());
               } catch (ExecutionException e) {
                 throw e;
               }
@@ -307,7 +307,7 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             Log.e(LOG_TAG, "execute: Got JSON Exception " + e.getMessage());
             callbackContext.error(e.getMessage());
           } catch (InterruptedException e) {
-            Log.e(TAG, formatLogMessage("Interrupted ${e.message}"));
+            Log.e(LOG_TAG, formatLogMessage("Interrupted ${e.message}"));
             callbackContext.error(e.getMessage());
           }
         }
