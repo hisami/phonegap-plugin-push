@@ -287,7 +287,7 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
               try {
                 FirebaseMessaging.getInstance().deleteToken().await();
               } catch (ExecutionException e) {
-                throw e.cause ? : e;
+                throw e;
               }
               Log.v(LOG_TAG, "UNREGISTER");
 
