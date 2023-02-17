@@ -16,7 +16,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
-import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.apache.cordova.CallbackContext;
@@ -200,7 +200,7 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             Log.v(LOG_TAG, "execute: senderID=" + senderID);
 
             try {
-              token = Tasks.await(FirebaseMessaging.getInstance().token);
+              token = FirebaseInstanceId.getInstance().getToken();
             } catch (IllegalStateException e) {
               Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
             }
@@ -284,11 +284,7 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             if (topics != null && !"".equals(registration_id)) {
               unsubscribeFromTopics(topics, registration_id);
             } else {
-              try {
-                Tasks.await(FirebaseMessaging.getInstance().deleteToken());
-              } catch (ExecutionException e) {
-                throw e;
-              }
+              FirebaseInstanceId.getInstance().deleteInstanceId();
               Log.v(LOG_TAG, "UNREGISTER");
 
               // Remove shared prefs
@@ -307,7 +303,7 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             Log.e(LOG_TAG, "execute: Got JSON Exception " + e.getMessage());
             callbackContext.error(e.getMessage());
           } catch (InterruptedException e) {
-            Log.e(LOG_TAG, formatLogMessage("Interrupted ${e.message}"));
+            Log.e(LOG_TAG, "Interrupted Error " + e.getMessage());
             callbackContext.error(e.getMessage());
           }
         }
