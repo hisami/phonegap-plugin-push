@@ -205,6 +205,13 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
               Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
             }
 
+            if (token == null) {
+              try {
+                token = FirebaseInstanceId.getInstance().getToken(senderID, FCM);
+              } catch (IllegalStateException e) {
+                Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
+              }
+            }
 
             if (!"".equals(token)) {
               JSONObject json = new JSONObject().put(REGISTRATION_ID, token);
@@ -301,9 +308,6 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             callbackContext.success();
           } catch (IOException e) {
             Log.e(LOG_TAG, "execute: Got JSON Exception " + e.getMessage());
-            callbackContext.error(e.getMessage());
-          } catch (InterruptedException e) {
-            Log.e(LOG_TAG, "Interrupted Error " + e.getMessage());
             callbackContext.error(e.getMessage());
           }
         }
