@@ -575,12 +575,12 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
             pIntent = PendingIntent.getActivity(this, uniquePendingIntentRequestCode, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
           } else {
-            console.log("background action1")
+            Log.d(LOG_TAG, "background action1");
             intent = new Intent(this, BackgroundActionButtonHandler.class);
             updateIntent(intent, action.getString(CALLBACK), extras, foreground, notId);
             pIntent = PendingIntent.getBroadcast(this, uniquePendingIntentRequestCode, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
-            console.log("background action2")
+            Log.d(LOG_TAG, "background action2");
           }
 
           NotificationCompat.Action.Builder actionBuilder = new NotificationCompat.Action.Builder(
