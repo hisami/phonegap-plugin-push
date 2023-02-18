@@ -54,7 +54,7 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
   private static final String LOG_TAG = "Push_FCMService";
   private static HashMap<Integer, ArrayList<String>> messageMap = new HashMap<Integer, ArrayList<String>>();
 
-  private int FLAG_MUTABLE = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? 33554432 : 0;
+  private int FLAG_MUTABLE = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? PendingIntent.FLAG_MUTABLE : 0;
   private int FLAG_IMMUTABLE = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) ? PendingIntent.FLAG_IMMUTABLE : 0;
 
   public void setNotification(int notId, String message) {
@@ -563,11 +563,11 @@ public class FCMService extends FirebaseMessagingService implements PushConstant
             if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.M) {
               Log.d(LOG_TAG, "push activity for notId " + notId);
               pIntent = PendingIntent.getActivity(this, uniquePendingIntentRequestCode, intent,
-                  PendingIntent.FLAG_ONE_SHOT | FLAG_IMMUTABLE);
+                  PendingIntent.FLAG_ONE_SHOT | FLAG_MUTABLE);
             } else {
               Log.d(LOG_TAG, "push receiver for notId " + notId);
               pIntent = PendingIntent.getBroadcast(this, uniquePendingIntentRequestCode, intent,
-                  PendingIntent.FLAG_ONE_SHOT | FLAG_IMMUTABLE);
+                  PendingIntent.FLAG_ONE_SHOT | FLAG_MUTABLE);
             }
           } else if (foreground) {
             intent = new Intent(this, PushHandlerActivity.class);
