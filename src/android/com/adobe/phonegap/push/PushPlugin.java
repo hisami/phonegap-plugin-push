@@ -226,9 +226,6 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
           } catch (JSONException e) {
             Log.e(LOG_TAG, "execute: Got JSON Exception " + e.getMessage());
             callbackContext.error(e.getMessage());
-          } catch (IOException e) {
-            Log.e(LOG_TAG, "execute: Got IO Exception " + e.getMessage());
-            callbackContext.error(e.getMessage());
           } catch (Resources.NotFoundException e) {
 
             Log.e(LOG_TAG, "execute: Got Resources NotFoundException " + e.getMessage());
@@ -290,7 +287,8 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
               try {
                 Tasks.await(FirebaseMessaging.getInstance().deleteToken());
               } catch (ExecutionException e) {
-                throw e;
+                Log.e(LOG_TAG, "ExecutionException " + e.getMessage());
+                callbackContext.error(e.getMessage());
               }
               Log.v(LOG_TAG, "UNREGISTER");
 
@@ -306,9 +304,6 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             }
 
             callbackContext.success();
-          } catch (IOException e) {
-            Log.e(LOG_TAG, "execute: Got JSON Exception " + e.getMessage());
-            callbackContext.error(e.getMessage());
           } catch (InterruptedException e) {
             Log.e(LOG_TAG, "Interrupted " + e.getMessage());
             callbackContext.error(e.getMessage());
