@@ -16,7 +16,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.apache.cordova.CallbackContext;
@@ -200,17 +200,13 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             Log.v(LOG_TAG, "execute: senderID=" + senderID);
 
             try {
-              token = FirebaseInstanceId.getInstance().getToken();
-            } catch (IllegalStateException e) {
+              token = Tasks.await(FirebaseMessaging.getInstance().getToken());
+            } catch (ExecutionException e) {
               Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
-            }
-
-            if (token == null) {
-              try {
-                token = FirebaseInstanceId.getInstance().getToken(senderID, FCM);
-              } catch (IllegalStateException e) {
-                Log.e(LOG_TAG, "Exception raised while getting Firebase token " + e.getMessage());
-              }
+            } catch (IllegalStateException e) {
+              Log.e(LOG_TAG, "Firebase Token Exception " + e.getMessage());
+            } catch (InterruptedException e) {
+              Log.e(LOG_TAG, "Firebase Token Exception "+ e.getMessage());
             }
 
             if (!"".equals(token)) {
@@ -291,7 +287,11 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             if (topics != null && !"".equals(registration_id)) {
               unsubscribeFromTopics(topics, registration_id);
             } else {
-              FirebaseInstanceId.getInstance().deleteInstanceId();
+              try {
+                Tasks.await(FirebaseMessaging.getInstance().deleteToken());
+              } catch (ExecutionException e) {
+                throw e;
+              }
               Log.v(LOG_TAG, "UNREGISTER");
 
               // Remove shared prefs
@@ -308,6 +308,9 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
             callbackContext.success();
           } catch (IOException e) {
             Log.e(LOG_TAG, "execute: Got JSON Exception " + e.getMessage());
+            callbackContext.error(e.getMessage());
+          } catch (InterruptedException e) {
+            Log.e(LOG_TAG, "Interrupted " + e.getMessage());
             callbackContext.error(e.getMessage());
           }
         }
